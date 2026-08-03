@@ -3,5 +3,11 @@
   "private": true,
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "scripts": {
+    "dev": "docker compose up -d && concurrently -n api,web -c blue,green \"cd apps/api && bun run start:dev\" \"cd apps/web && bun run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.4"
+  }
 }
