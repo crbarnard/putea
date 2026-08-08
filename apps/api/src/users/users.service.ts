@@ -1,7 +1,7 @@
 // src/users/users.service.ts
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '../drizzle/drizzle.service';
-import { users } from '../drizzle/schema';
+import { users } from '../drizzle/schema/users';
 
 @Injectable()
 export class UsersService {
