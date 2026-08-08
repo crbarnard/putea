@@ -1,22 +1,27 @@
-FROM node:24-alpine AS development-dependencies-env
-COPY . /app
+FROM oven/bun:1 AS base
 WORKDIR /app
-RUN npm ci
 
-FROM node:24-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
-WORKDIR /app
-RUN npm ci --omit=dev
+# dependencies
+FROM base AS deps
+COPY package.json bun.lock ./
+COPY apps/web/package.json apps/web/package.json
+COPY apps/api/package.json apps/api/package.json
+RUN bun install --frozen-lockfile
 
-FROM node:24-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
-WORKDIR /app
-RUN npm run build
+# build app
+FROM deps AS build
+COPY . .
+RUN cd apps/web && bun run build
 
-FROM node:24-alpine
-COPY ./package.json package-lock.json /app/
-COPY --from=production-dependencies-env /app/node_modules /app/node_modules
-COPY --from=build-env /app/build /app/build
+# build runner
+FROM base AS runner
 WORKDIR /app
-CMD ["npm", "run", "start"]
+ENV NODE_ENV=production
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=build /app/apps/web/build ./apps/web/build
+COPY apps/web/package.json ./apps/web/package.json
+
+EXPOSE 3000
+
+CMD ["bun", "run", "--cwd", "apps/web", "start"]
