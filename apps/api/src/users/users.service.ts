@@ -6,7 +6,7 @@ import { DrizzleService } from '../drizzle/drizzle.service';
 export class UsersService {
   constructor(private drizzle: DrizzleService) {}
 
-  findAll() {
+  async findAll() {
     return this.drizzle.db.query.users.findMany();
   }
 }
