@@ -1,27 +1,24 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1 AS build
 WORKDIR /app
 
-# dependencies
-FROM base AS deps
-COPY package.json bun.lock ./
-COPY apps/web/package.json apps/web/package.json
-COPY apps/api/package.json apps/api/package.json
-RUN bun install --frozen-lockfile
+COPY apps/web/package.json ./
+RUN bun install
 
-# build app
-FROM deps AS build
-COPY . .
-RUN cd apps/web && bun run build
+COPY apps/web/ ./
+RUN bun run build
 
-# build runner
-FROM base AS runner
+
+FROM node:22-slim AS runner
 WORKDIR /app
+
 ENV NODE_ENV=production
+ENV PORT=3000
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=build /app/apps/web/build ./apps/web/build
-COPY apps/web/package.json ./apps/web/package.json
+COPY apps/web/package.json ./
+RUN npm install --omit=dev
+
+COPY --from=build /app/build ./build
 
 EXPOSE 3000
 
-CMD ["bun", "run", "--cwd", "apps/web", "start"]
+CMD ["./node_modules/.bin/react-router-serve", "./build/server/index.js"]
