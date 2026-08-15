@@ -1,29 +1,20 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1 AS build
 WORKDIR /app
 
-# dependencies
-FROM base AS deps
-COPY package.json bun.lock ./
-COPY apps/api/package.json apps/api/package.json
-COPY apps/web/package.json apps/web/package.json
-RUN bun install --frozen-lockfile
+COPY apps/api/package.json ./
+RUN bun install
 
-# compile api
-FROM deps AS build
-COPY . .
-RUN cd apps/api && bun run build
+COPY apps/api/ ./
+RUN bun run build
 
-# runner
-FROM base AS runner
+FROM oven/bun:1 AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=build /app/apps/api/dist ./apps/api/dist
-COPY apps/api/package.json ./apps/api/package.json
-COPY apps/api/drizzle ./apps/api/drizzle
-COPY apps/api/drizzle.config.ts ./apps/api/drizzle.config.ts
+COPY apps/api/package.json ./
+RUN bun install --production
+
+COPY --from=build /app/dist ./dist
 
 EXPOSE 3000
-
-CMD ["bun", "apps/api/dist/main.js"]
+CMD ["bun", "./dist/src/main.js"]
