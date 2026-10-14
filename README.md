@@ -50,6 +50,41 @@ When your docker container is running, connect to it on port `3000` for the admi
 
 ## Getting Started
 
+Local development needs [Bun](https://bun.sh) and Docker.
+
+1. Install dependencies from the repo root:
+
+```bash
+bun install
+```
+
+2. Set `DATABASE_URL` in `apps/api/.env`. For the Postgres container this is
+   `postgres://postgres:postgres@localhost:5432/putea`.
+
+3. Start Postgres, the API and the web app:
+
+```bash
+bun run dev
+```
+
+The API runs on port `3000` and the web app on port `8000`.
+
+### Database
+
+The database scripts live in the api package, so run them from `apps/api`
+(or from the root with `bun run --cwd apps/api <script>`):
+
+```bash
+cd apps/api
+bun run db:generate   # generate SQL migrations from the Drizzle schema
+bun run db:migrate    # apply migrations to the database
+bun run db:push       # push the schema directly (skips migration files)
+bun run db:studio     # browse the database in Drizzle Studio
+```
+
+The schema lives in `apps/api/src/drizzle/schema`. After changing it, run
+`db:generate` then `db:migrate`.
+
 ## Getting Support
 
 1. [Found a bug?](https://github.com/crbarnard/putea/issues)
