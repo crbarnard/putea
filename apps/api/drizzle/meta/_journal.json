@@ -8,6 +8,13 @@
       "when": 1785748310507,
       "tag": "0000_loving_hannibal_king",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791962054851,
+      "tag": "0001_safe_triathlon",
+      "breakpoints": true
     }
   ]
 }
