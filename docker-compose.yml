@@ -1,15 +1,30 @@
 services:
+
+  api:
+    image: 'ghcr.io/crbarnard/putea-api:latest'
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - putea-data:/data
+
+  web:
+    image: 'ghcr.io/crbarnard/putea-web:latest'
+    restart: unless-stopped
+    ports:
+      - '8000:8000'
+    volumes:
+      - putea-data:/data
+
   postgres:
     image: postgres:16
-    container_name: nestjs-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: putea
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
 volumes:
+  putea-data:
   postgres_data:

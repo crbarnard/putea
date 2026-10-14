@@ -36,6 +36,7 @@ services:
 volumes:
   putea-data:
 ```
+
 3. Bring up your stack by running
 
 ```bash
@@ -47,10 +48,7 @@ docker compose up -d
 When your docker container is running, connect to it on port `3000` for the admin interface.
 [http://127.0.0.1:3000](http://127.0.0.1:3000)
 
-
-
 ## Getting Started
-
 
 ## Getting Support
 
