@@ -114,3 +114,7 @@ dist
 
 
 .DS_Store
+examples/
+docs/design.md
+docs/project-structure.md
+schema.ts
